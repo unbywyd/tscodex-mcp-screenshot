@@ -8,6 +8,8 @@
   "bin": {
     "mcp-screenshot": "./dist/index.js"
   },
+  "preferGlobal": true,
+  "private": false,
   "files": [
     "dist",
     "README.md",
@@ -34,19 +36,23 @@
   ],
   "author": "unbywyd",
   "license": "MIT",
-  "homepage": "https://tscodex.com/mcp-manager",
+  "homepage": "https://tscodex.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/anthropics/mcp-screenshot"
+    "url": "https://github.com/unbywyd/tscodex-mcp-screenshot"
   },
   "bugs": {
-    "url": "https://github.com/anthropics/mcp-screenshot/issues"
+    "url": "https://github.com/unbywyd/tscodex-mcp-screenshot/issues"
   },
   "dependencies": {
     "@sinclair/typebox": "^0.34.41",
     "@tscodex/mcp-sdk": "^0.0.6",
     "playwright": "^1.40.0",
     "sharp": "^0.34.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
