@@ -7,6 +7,10 @@
     "mcp-screenshot": {
       "url": "http://127.0.0.1:4040/mcp/b5779b26-9fcb-49a0-910e-5149f81a632e/006ea7e8-5cd4-4b54-8bf8-7029de69ed2e",
       "id": "b5779b26-9fcb-49a0-910e-5149f81a632e"
+    },
+    "mcp-pdf": {
+      "url": "http://127.0.0.1:4040/mcp/5cb5017a-6c98-4f58-830a-b30bb8e6cc93/006ea7e8-5cd4-4b54-8bf8-7029de69ed2e",
+      "id": "5cb5017a-6c98-4f58-830a-b30bb8e6cc93"
     }
   }
 }

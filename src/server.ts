@@ -6,6 +6,7 @@ import { McpServer } from '@tscodex/mcp-sdk';
 import { ConfigSchema, type Config } from './config.js';
 import { loadConfigForSDK } from './config-loader.js';
 import { registerScreenshotTools } from './tools/screenshot.js';
+import { registerHtmlCaptureTools } from './tools/html-capture.js';
 import { closeBrowserManager } from './browser/browser-manager.js';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -27,8 +28,9 @@ export async function createServer() {
     }
   });
 
-  // Register screenshot tools
+  // Register tools
   registerScreenshotTools(server);
+  registerHtmlCaptureTools(server);
 
   // Graceful shutdown
   const cleanup = async () => {

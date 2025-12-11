@@ -10,15 +10,26 @@
 
 import vm from 'node:vm';
 import type { Page } from 'playwright';
-import { ScreenshotTaken, type ScreenshotOptions, type ScriptResult } from '../types.js';
+import {
+  ScreenshotTaken,
+  HtmlCaptured,
+  type ScreenshotOptions,
+  type ScriptResult,
+  type HtmlCaptureOptions,
+  type HtmlCaptureResult
+} from '../types.js';
 
 const SCRIPT_TIMEOUT = 60000; // 60 seconds
 const MAX_WAIT_TIME = 30000; // 30 seconds max for wait()
 
+export type ScriptExecutionResult =
+  | { type: 'screenshot'; result: ScriptResult }
+  | { type: 'html'; result: HtmlCaptureResult };
+
 /**
  * Execute user script in isolated VM context
  */
-export async function executeScript(script: string, page: Page): Promise<ScriptResult> {
+export async function executeScript(script: string, page: Page): Promise<ScriptExecutionResult> {
   // Create isolated context with only allowed APIs
   const context = vm.createContext({
     page: createPageProxy(page),
@@ -37,6 +48,21 @@ export async function executeScript(script: string, page: Page): Promise<ScriptR
 
       // Throw special error to break out of script execution
       throw new ScreenshotTaken({ buffer, options });
+    },
+
+    // HTML capture function - triggers HTML capture and terminates script
+    html: async (options: HtmlCaptureOptions = {}) => {
+      let htmlContent: string;
+
+      if (options.selector) {
+        const element = page.locator(options.selector);
+        htmlContent = await element.evaluate((el) => el.outerHTML);
+      } else {
+        htmlContent = await page.content();
+      }
+
+      // Throw special error to break out of script execution
+      throw new HtmlCaptured({ html: htmlContent, selector: options.selector });
     },
 
     // Helper function for delays
@@ -64,12 +90,17 @@ export async function executeScript(script: string, page: Page): Promise<ScriptR
 
     await result;
 
-    // If we get here, script finished without calling screenshot()
-    throw new Error('Script must call screenshot() to capture the image');
+    // If we get here, script finished without calling screenshot() or html()
+    throw new Error('Script must call screenshot() or html() to capture content');
   } catch (e) {
-    // Check if this is our special "success" error
+    // Check if this is our special "success" error for screenshot
     if (e instanceof ScreenshotTaken) {
-      return e.result;
+      return { type: 'screenshot', result: e.result };
+    }
+
+    // Check if this is our special "success" error for HTML
+    if (e instanceof HtmlCaptured) {
+      return { type: 'html', result: e.result };
     }
 
     // Check for timeout

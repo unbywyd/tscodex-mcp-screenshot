@@ -111,8 +111,11 @@ Returns: Path to saved file, image dimensions, file size, and a small preview im
 
         // Execute script if provided
         if (params.script) {
-          const result = await executeScript(params.script, page);
-          screenshotBuffer = result.buffer;
+          const execResult = await executeScript(params.script, page);
+          if (execResult.type !== 'screenshot') {
+            throw new Error('Script called html() but screenshot_capture expects screenshot(). Use html_capture tool instead.');
+          }
+          screenshotBuffer = execResult.result.buffer;
         } else {
           // Take screenshot based on parameters
           const format = params.format || config.defaultFormat;

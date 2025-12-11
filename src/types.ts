@@ -34,3 +34,29 @@ export class ScreenshotTaken extends Error {
     this.name = 'ScreenshotTaken';
   }
 }
+
+/**
+ * HTML capture options
+ */
+export interface HtmlCaptureOptions {
+  selector?: string;
+}
+
+/**
+ * HTML capture result
+ */
+export interface HtmlCaptureResult {
+  html: string;
+  selector?: string;
+}
+
+/**
+ * Special error class to signal successful HTML capture
+ * Used to break out of script execution when html() is called
+ */
+export class HtmlCaptured extends Error {
+  constructor(public result: HtmlCaptureResult) {
+    super('HTML captured');
+    this.name = 'HtmlCaptured';
+  }
+}

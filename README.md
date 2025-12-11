@@ -7,6 +7,7 @@ MCP server for capturing web page screenshots using Playwright. Supports full pa
 - **Full page screenshots** - capture entire scrollable content
 - **Viewport screenshots** - capture visible area only
 - **Element screenshots** - capture specific DOM elements by CSS selector
+- **HTML capture** - get DOM content instead of images
 - **Script execution** - run Playwright code for complex interactions (click menus, fill forms, hover elements)
 - **Multiple formats** - PNG, JPEG, WebP
 - **Custom viewports** - test responsive layouts
@@ -135,19 +136,76 @@ Simplified tool for element screenshots only.
 | `outputPath` | string | ✅ | Path for saving |
 | `waitFor` | number | ❌ | Delay in ms |
 
+### html_capture
+
+Capture HTML content from web pages instead of screenshots. Useful for debugging page structure, extracting DOM content, or capturing HTML after JavaScript execution.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `url` | string | ✅ | URL of the page to capture HTML from |
+| `selector` | string | ❌ | CSS selector - capture only this element's outerHTML |
+| `waitFor` | number | ❌ | Delay before capture in ms (0-30000) |
+| `waitForSelector` | string | ❌ | Wait for element before capture |
+| `viewport` | object | ❌ | `{width, height}` - browser viewport |
+| `timeout` | number | ❌ | Page load timeout in ms |
+| `script` | string | ❌ | Playwright script to execute (must call `html()`) |
+
+**Examples:**
+
+Full page HTML:
+```json
+{
+  "url": "https://example.com"
+}
+```
+
+Element HTML:
+```json
+{
+  "url": "https://example.com",
+  "selector": "nav.main-menu"
+}
+```
+
+With script (capture after interaction):
+```json
+{
+  "url": "https://example.com/app",
+  "script": "await page.click('#load-more'); await page.waitForSelector('.loaded'); await html({ selector: '.results' });"
+}
+```
+
+### html_element
+
+Simplified tool for capturing HTML of specific elements.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `url` | string | ✅ | Page URL |
+| `selector` | string | ✅ | CSS selector of element |
+| `waitFor` | number | ❌ | Delay in ms |
+
 ## Script Execution
 
 When using the `script` parameter, you write Playwright code that runs in a secure VM sandbox.
 
-**Important:** Your script MUST call `screenshot()` to capture the image. This function terminates the script.
+**Important:** Your script MUST call `screenshot()` or `html()` to capture. These functions terminate the script.
 
 ### Available Functions
 
 ```javascript
-// Screenshot (REQUIRED - call this to capture)
+// Screenshot (for screenshot_capture tool)
 await screenshot();                          // viewport
 await screenshot({ fullPage: true });        // full page
 await screenshot({ selector: '.element' });  // specific element
+
+// HTML capture (for html_capture tool)
+await html();                                // full page HTML
+await html({ selector: '.element' });        // element outerHTML
 
 // Page interactions
 await page.click('#button');
@@ -236,7 +294,9 @@ Create `.mcp-screenshot.json` in your project root:
 | `Invalid output path` | Path traversal or outside project root |
 | `Element not found` | Selector didn't match any element |
 | `Script timeout` | Script exceeded 60 seconds |
-| `Script must call screenshot()` | Script finished without capturing |
+| `Script must call screenshot()` | Script finished without capturing (screenshot tools) |
+| `Script must call html()` | Script finished without capturing (html tools) |
+| `Wrong capture function` | Used `html()` in screenshot tool or vice versa |
 
 ## Requirements
 
