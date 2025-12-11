@@ -2,6 +2,12 @@
 
 MCP server for capturing web page screenshots using Playwright. Supports full page, viewport, and element screenshots with optional script execution for complex interactions.
 
+**Official website: [http://tscodex.com/](http://tscodex.com/)**
+
+**Built on [@tscodex/mcp-sdk](https://www.npmjs.com/package/@tscodex/mcp-sdk)** - This project uses the official TSCodex MCP SDK for server infrastructure, authentication, configuration management, and protocol handling.
+
+**Managed by [MCP Manager](https://github.com/unbywyd/tscodex-mcp-manager-app)** - Use the MCP Manager desktop application for workspace isolation, visual configuration, and seamless integration with Cursor. The **[MCP Manager Bridge](https://github.com/unbywyd/tscodex-mcp-manager-bridge)** VS Code extension provides a bridge to manage MCP servers directly from your IDE.
+
 ## Features
 
 - **Full page screenshots** - capture entire scrollable content
