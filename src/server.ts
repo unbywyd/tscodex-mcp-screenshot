@@ -33,14 +33,25 @@ export async function createServer() {
   registerHtmlCaptureTools(server);
 
   // Graceful shutdown
-  const cleanup = async () => {
+  const cleanup = async (exitCode: number = 0) => {
     console.log('Shutting down...');
     await closeBrowserManager();
-    process.exit(0);
+    process.exit(exitCode);
   };
 
-  process.on('SIGINT', cleanup);
-  process.on('SIGTERM', cleanup);
+  process.on('SIGINT', () => cleanup(0));
+  process.on('SIGTERM', () => cleanup(0));
+
+  // Handle uncaught errors to prevent silent crashes
+  process.on('uncaughtException', (error) => {
+    console.error('[FATAL] Uncaught exception:', error);
+    cleanup(1);
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    console.error('[FATAL] Unhandled rejection:', reason);
+    cleanup(1);
+  });
 
   return { server };
 }
